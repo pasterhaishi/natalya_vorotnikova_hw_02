@@ -47,9 +47,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+        padding: const EdgeInsets.fromLTRB(0, 80, 0, 0),
         child: ListView.builder(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(16),
             itemCount: dataRecipes.length,
             itemBuilder: (BuildContext context, int index) {
               return Padding(
