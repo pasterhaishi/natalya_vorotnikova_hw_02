@@ -7,18 +7,18 @@ class MySpisok extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return const MaterialApp(
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class DataOfRecipe {
+class Recipe {
   String imagePath = '';
   String nameRecipe = '';
   String timeCoocking = '';
 
-  DataOfRecipe(this.imagePath, this.nameRecipe, this.timeCoocking);
+  Recipe(this.imagePath, this.nameRecipe, this.timeCoocking);
 }
 
 class MyHomePage extends StatefulWidget {
@@ -31,31 +31,32 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<DataOfRecipe> dataRecipes = [
-    DataOfRecipe('assets/images/01.png', 'Лосось в соусе терияки', '45 минут'),
-    DataOfRecipe('assets/images/02.png', 'Поке боул с сыром тофу', '30 минут'),
-    DataOfRecipe('assets/images/03.png',
-        'Стейк из говядины по-грузински с кукурузой', '1 час 15 минут'),
-    DataOfRecipe(
-        'assets/images/04.png', 'Тосты с голубикой и бананом', '45 минут'),
-    DataOfRecipe('assets/images/05.png', 'Паста с морепродуктами', '25 минут'),
-    DataOfRecipe('assets/images/06.png', 'Бургер с двумя котлетами', '1 час'),
-    DataOfRecipe(
-        'assets/images/07.png', 'Пицца Маргарита домашняя', '25 минут'),
+  List<Recipe> dataRecipes = [
+    Recipe('assets/images/01.png', 'Лосось в соусе терияки', '45 минут'),
+    Recipe('assets/images/02.png', 'Поке боул с сыром тофу', '30 минут'),
+    Recipe('assets/images/03.png', 'Стейк из говядины по-грузински с кукурузой',
+        '1 час 15 минут'),
+    Recipe('assets/images/04.png', 'Тосты с голубикой и бананом', '45 минут'),
+    Recipe('assets/images/05.png', 'Паста с морепродуктами', '25 минут'),
+    Recipe('assets/images/06.png', 'Бургер с двумя котлетами', '1 час'),
+    Recipe('assets/images/07.png', 'Пицца Маргарита домашняя', '25 минут'),
   ];
   _MyHomePageState();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: <Widget>[
-            SizedBox(height: 50),
-            _Spisok_recipes(dataOfRecipe: dataRecipes),
-          ],
-        ),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+        child: ListView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: dataRecipes.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+                child: _CardOfRecipe(data: dataRecipes[index]),
+              );
+            }),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
@@ -73,29 +74,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class _Spisok_recipes extends StatelessWidget {
-  final List<DataOfRecipe> dataOfRecipe;
-  const _Spisok_recipes({
-    Key? key,
-    required this.dataOfRecipe,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      width: double.infinity,
-      child: Column(
-        children:
-            dataOfRecipe.map((data) => _Card_of_recipe(data: data)).toList(),
-      ),
-    );
-  }
-}
-
-class _Card_of_recipe extends StatelessWidget {
-  final DataOfRecipe data;
-  const _Card_of_recipe({
+class _CardOfRecipe extends StatelessWidget {
+  final Recipe data;
+  const _CardOfRecipe({
     Key? key,
     required this.data,
   }) : super(key: key);
@@ -103,13 +84,12 @@ class _Card_of_recipe extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(0, 0, 0, 24),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(5),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
-              color: AppColors.SHADOW,
+              color: AppColors.shadow,
               blurRadius: 4.0,
               spreadRadius: 4.0,
               offset: Offset(0, 4),
@@ -118,7 +98,7 @@ class _Card_of_recipe extends StatelessWidget {
       height: 136,
       child: Expanded(
         child: Row(children: [
-          Container(
+          SizedBox(
             width: 149,
             height: 136,
             child: Image.asset(data.imagePath),
@@ -127,19 +107,21 @@ class _Card_of_recipe extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(14, 30, 0, 0),
             child: Column(
               children: [
-                Container(
+                SizedBox(
                   width: 208,
                   height: 52,
                   child: Text(data.nameRecipe,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontFamily: 'Roboto',
                           fontWeight: FontWeight.w500,
-                          fontSize: 22)),
+                          fontSize: 22),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
-                Container(
+                SizedBox(
                   width: 208,
                   height: 20,
                   child: Row(
@@ -149,15 +131,16 @@ class _Card_of_recipe extends StatelessWidget {
                         width: 16,
                         height: 16,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Text(data.timeCoocking,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontFamily: 'Roboto',
                               fontWeight: FontWeight.w400,
                               fontSize: 16,
-                              color: AppColors.PRIMARY_GREEN))
+                              color: AppColors.primaryGreen),
+                          overflow: TextOverflow.ellipsis)
                     ],
                   ),
                 )
