@@ -46,8 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 80, 0, 0),
+      body: SafeArea(
+        //padding: const EdgeInsets.fromLTRB(0, 80, 0, 0),
         child: ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: dataRecipes.length,
