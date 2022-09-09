@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'recipe_detail_page.dart';
+
 import 'colors.dart';
+import 'models.dart';
+import 'data_of_recipes.dart';
 
 class MySpisok extends StatelessWidget {
   const MySpisok({Key? key}) : super(key: key);
@@ -13,14 +17,6 @@ class MySpisok extends StatelessWidget {
   }
 }
 
-class Recipe {
-  String imagePath = '';
-  String nameRecipe = '';
-  String timeCoocking = '';
-
-  Recipe(this.imagePath, this.nameRecipe, this.timeCoocking);
-}
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
@@ -31,16 +27,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Recipe> dataRecipes = [
-    Recipe('assets/images/01.png', 'Лосось в соусе терияки', '45 минут'),
-    Recipe('assets/images/02.png', 'Поке боул с сыром тофу', '30 минут'),
-    Recipe('assets/images/03.png', 'Стейк из говядины по-грузински с кукурузой',
-        '1 час 15 минут'),
-    Recipe('assets/images/04.png', 'Тосты с голубикой и бананом', '45 минут'),
-    Recipe('assets/images/05.png', 'Паста с морепродуктами', '25 минут'),
-    Recipe('assets/images/06.png', 'Бургер с двумя котлетами', '1 час'),
-    Recipe('assets/images/07.png', 'Пицца Маргарита домашняя', '25 минут'),
-  ];
+  List<Recipe> dataRecipes = DataofRecipes.dataOfRecipes;
   _MyHomePageState();
 
   @override
@@ -54,7 +41,14 @@ class _MyHomePageState extends State<MyHomePage> {
             itemBuilder: (BuildContext context, int index) {
               return Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
-                child: _CardOfRecipe(data: dataRecipes[index]),
+                child: GestureDetector(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => RecipeDetailPage(
+                                  data: dataRecipes[index],
+                                ))),
+                    child: _CardOfRecipe(data: dataRecipes[index])),
               );
             }),
       ),
@@ -83,7 +77,10 @@ class _CardOfRecipe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return
+        // GestureDetector(
+        //   child:
+        Container(
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(5),
@@ -149,6 +146,7 @@ class _CardOfRecipe extends StatelessWidget {
           ),
         ]),
       ),
+      // ),
     );
   }
 }

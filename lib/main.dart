@@ -2,5 +2,7 @@ import 'package:flutter/material.dart';
 import 'widget_spisok.dart';
 
 void main() {
-  runApp(const MySpisok());
+  runApp(MaterialApp(initialRoute: '/', routes: {
+    '/': (context) => const MySpisok(),
+  }));
 }
