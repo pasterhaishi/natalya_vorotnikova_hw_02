@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'colors.dart';
 import 'models.dart';
 import 'package:intl/intl.dart';
-
-// import 'package:natalya_vorotnikova_hw_02/data_of_recipes.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:path/path.dart';
 
 class RecipeDetailPage extends StatefulWidget {
   final Recipe data;
@@ -18,12 +21,14 @@ class _PageState extends State<RecipeDetailPage> {
   bool _isExistence = false;
   bool _isCoocking = true;
   String textComment = '';
+  String pathValue = '';
 
   var now = DateTime.now();
 
   var formatter = DateFormat('dd.MM.yyyy');
   String formattedDate = '';
   var listComment = [Comment(' ', '', '', '', '')];
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
@@ -45,9 +50,30 @@ class _PageState extends State<RecipeDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        bottom: _isCoocking
+            ? null
+            : PreferredSize(
+                child: Container(
+                  height: 60,
+                  color: AppColors.primaryGreen,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const [
+                        Text('Таймер',
+                            style: TextStyle(
+                                fontFamily: 'Roboto',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 15,
+                                color: Colors.white)),
+                        Timer(time: 2700),
+                      ]),
+                ),
+                preferredSize: const Size.fromHeight(60)),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
+
+            setState(() {});
           },
           icon: const Icon(Icons.arrow_back),
           color: Colors.black,
@@ -61,7 +87,7 @@ class _PageState extends State<RecipeDetailPage> {
               color: AppColors.dackGreen),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: _isCoocking ? Colors.white : AppColors.primaryGreen,
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.all(17.0),
@@ -87,13 +113,14 @@ class _PageState extends State<RecipeDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      widget.data.nameRecipe,
-                      style: const TextStyle(
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 24,
-                      ),
+                    Expanded(
+                      child: Text(widget.data.nameRecipe,
+                          style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 24,
+                          ),
+                          maxLines: 2),
                     ),
                     IconButton(
                         onPressed: () {
@@ -145,7 +172,7 @@ class _PageState extends State<RecipeDetailPage> {
                           fit: BoxFit.cover,
                           alignment: Alignment.center)),
                 ),
-                (widget.data.coocking > 0)
+                (widget.data.favorite)
                     ? Container(
                         width: 66,
                         height: 23,
@@ -159,9 +186,9 @@ class _PageState extends State<RecipeDetailPage> {
                         child: Container(
                             padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
                             alignment: Alignment.centerRight,
-                            child: Text(
-                              widget.data.coocking.toString(),
-                              style: const TextStyle(
+                            child: const Text(
+                              '1',
+                              style: TextStyle(
                                   fontFamily: 'Roboto',
                                   fontWeight: FontWeight.w800,
                                   fontSize: 14,
@@ -240,28 +267,50 @@ class _PageState extends State<RecipeDetailPage> {
                   },
                 ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _isCoocking = !_isCoocking;
-                  });
-                },
-                style: ButtonStyle(
-                  padding: MaterialStateProperty.all(
-                      const EdgeInsets.fromLTRB(53, 12, 53, 12)),
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25))),
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(AppColors.dackGreen),
-                ),
-                child: const Text(
-                  'Начать готовить',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500),
-                ),
-              ),
+              _isCoocking
+                  ? ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _isCoocking = !_isCoocking;
+                        });
+                      },
+                      style: ButtonStyle(
+                        padding: MaterialStateProperty.all(
+                            const EdgeInsets.fromLTRB(53, 12, 53, 12)),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25))),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            AppColors.dackGreen),
+                      ),
+                      child: const Text(
+                        'Начать готовить',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    )
+                  : OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          _isCoocking = !_isCoocking;
+                        });
+                      },
+                      style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                              width: 3.0, color: AppColors.dackGreen),
+                          padding: const EdgeInsets.fromLTRB(53, 12, 53, 12),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25))),
+                      child: const Text(
+                        'Закончить готовить',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: AppColors.dackGreen),
+                      ),
+                    ),
               const Divider(
                 thickness: 2,
                 color: AppColors.grayText,
@@ -274,6 +323,7 @@ class _PageState extends State<RecipeDetailPage> {
                       formattedDate: formattedDate,
                       listComment: listComment),
                   TextField(
+                      controller: _controller,
                       keyboardType: TextInputType.name,
                       onSubmitted: (String value) {
                         setState(() {
@@ -282,10 +332,12 @@ class _PageState extends State<RecipeDetailPage> {
                               value,
                               'anna',
                               'assets/images/avatar.png',
-                              'assets/images/comment_image.png',
+                              pathValue,
                               formattedDate);
+                          // print(pathValue);
 
                           listComment.add(newComment);
+                          _controller.clear();
                         });
                       },
                       maxLines: 2,
@@ -293,7 +345,26 @@ class _PageState extends State<RecipeDetailPage> {
                           suffixIcon: IconButton(
                               alignment: Alignment.topRight,
                               padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                              onPressed: () {},
+                              onPressed: () {
+                                showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        GetImage());
+                              },
+                              //  async {
+                              //   pathValue = await Navigator.push(
+                              //       context,
+                              //       PageRouteBuilder(
+                              //         opaque: false,
+                              //         pageBuilder: (context, _, __) => Photo(),
+                              //         transitionsBuilder: (__,Animation<double> animation,___,Widget child)
+                              //         {
+                              //           return FadeTransition(opacity: animation,child:ScaleTransition(scale: ,))
+                              //         }
+                              //       ));
+                              //   // print(pathValue);
+                              //   // print(widget.data.comments.last.pathPhoto);
+                              // },
                               icon: const Icon(
                                 Icons.photo,
                                 color: AppColors.dackGreen,
@@ -323,6 +394,128 @@ class _PageState extends State<RecipeDetailPage> {
     );
   }
 }
+
+class GetImage extends StatefulWidget {
+  const GetImage({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<GetImage> createState() => _GetImageState();
+}
+
+class _GetImageState extends State<GetImage> {
+  File? _image;
+  final picker = ImagePicker();
+
+  Future getImageFromCamera() async {
+    final pickerImage = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickerImage != null) {
+        _image = File(pickerImage.path);
+      }
+    });
+  }
+
+  Future getImageFromGallery() async {
+    final pickerImage = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickerImage != null) {
+        _image = File(pickerImage.path);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+      children: <Widget>[
+        ListTile(
+            title: const Text('Камера'),
+            onTap: () {
+              getImageFromCamera();
+              // Navigator.of(context).pop(_image);
+            }),
+        ListTile(
+          title: Text(_image.toString()),
+          onTap: () {
+            getImageFromGallery();
+            Navigator.of(context).pop(_image);
+          },
+        )
+      ],
+    );
+  }
+}
+
+// ignore: must_be_immutable
+// class Photo extends StatefulWidget {
+//   Photo({Key? key}) : super(key: key);
+
+//   String pathImage = '';
+
+//   // String get path {
+//   //   return pathImage;
+//   // }
+
+//   @override
+//   State<Photo> createState() => _PhotoState();
+// }
+
+// class _PhotoState extends State<Photo> {
+//   // File? _image;
+
+//   Future getImage(ImageSource source) async {
+//     try {
+//       final image = await ImagePicker().pickImage(source: source);
+//       if (image == null) return;
+
+//       // final imageTemporary = File(image.path);
+//       final imagePermanent = await saveFilePermanently(image.path);
+//       widget.pathImage = imagePermanent.toString();
+//       // setState(() {
+//       //   widget.pathImage = imagePermanent.toString();
+//       //   // this._image = imagePermanent;
+//       //   print(imagePermanent);
+//       // });
+//     } on PlatformException catch (e) {
+//       print('Files to pick image: $e');
+//     }
+//   }
+
+//   Future<File> saveFilePermanently(String imagePath) async {
+//     final directory = await getApplicationDocumentsDirectory();
+//     final name = basename(imagePath);
+//     final image = File('${directory.path}/$name');
+
+//     return File(imagePath).copy(image.path);
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     String pathValue = '';
+//     return SimpleDialog(
+//       children: <Widget>[
+//         ListTile(
+//           title: const Text('Камера'),
+//           onTap: () {
+//             getImage(ImageSource.camera);
+
+//             pathValue = widget.pathImage.toString();
+//             Navigator.pop(context, pathValue);
+//             print(pathValue);
+//           },
+//         ),
+//         ListTile(
+//           title: Text(widget.pathImage.toString()),
+//           onTap: () => getImage(ImageSource.gallery),
+//         )
+//       ],
+//     );
+//   }
+// }
 
 class NewWidget extends StatefulWidget {
   const NewWidget({
@@ -360,7 +553,7 @@ class _NewWidgetState extends State<NewWidget> {
   }
 }
 
-class _CardOfComment extends StatefulWidget {
+class _CardOfComment extends StatelessWidget {
   const _CardOfComment({
     Key? key,
     required this.formattedDate,
@@ -371,11 +564,7 @@ class _CardOfComment extends StatefulWidget {
 
   final Comment comment;
 
-  @override
-  State<_CardOfComment> createState() => _CardOfCommentState();
-}
-
-class _CardOfCommentState extends State<_CardOfComment> {
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -385,7 +574,7 @@ class _CardOfCommentState extends State<_CardOfComment> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
-            child: Image.asset(widget.comment.pathAvatar),
+            child: Image.asset(comment.pathAvatar),
           ),
           const SizedBox(
             width: 18,
@@ -396,13 +585,13 @@ class _CardOfCommentState extends State<_CardOfComment> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(widget.comment.author,
+                  Text(comment.author,
                       style: const TextStyle(
                           color: AppColors.primaryGreen,
                           fontSize: 16,
                           fontWeight: FontWeight.w400)),
                   // ignore: unnecessary_string_interpolations
-                  Text('${widget.formattedDate}',
+                  Text('${formattedDate}',
                       style: const TextStyle(
                           color: AppColors.grayText,
                           fontSize: 14,
@@ -414,7 +603,7 @@ class _CardOfCommentState extends State<_CardOfComment> {
               ),
               Container(
                 alignment: Alignment.centerLeft,
-                child: Text(widget.comment.text,
+                child: Text(comment.text,
                     style: const TextStyle(
                         color: Colors.black,
                         fontSize: 16,
@@ -573,6 +762,67 @@ class _State extends State<_CardOfStep> {
               )
             ]),
           );
+  }
+}
+
+@immutable
+class Timer extends StatefulWidget {
+  const Timer({Key? key, required this.time}) : super(key: key);
+  final int time;
+  @override
+  _TimerState createState() => _TimerState();
+}
+
+class _TimerState extends State<Timer> with TickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    int levelClock = widget.time;
+
+    _controller = AnimationController(
+        vsync: this, duration: Duration(seconds: levelClock));
+
+    _controller.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Countdown(
+      animation: StepTween(
+        begin: widget.time,
+        end: 0,
+      ).animate(_controller),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class Countdown extends AnimatedWidget {
+  Countdown({Key? key, required this.animation})
+      : super(key: key, listenable: animation);
+  Animation<int> animation;
+
+  @override
+  build(BuildContext context) {
+    Duration clockTimer = Duration(seconds: animation.value);
+
+    String timerText =
+        '${clockTimer.inMinutes.remainder(60).toString()}:${clockTimer.inSeconds.remainder(60).toString().padLeft(2, '0')}';
+
+    return Text(timerText,
+        style: const TextStyle(
+            fontFamily: 'Roboto',
+            fontWeight: FontWeight.w900,
+            fontSize: 24,
+            color: Colors.white));
   }
 }
 

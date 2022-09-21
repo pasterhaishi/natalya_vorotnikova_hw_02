@@ -77,76 +77,102 @@ class _CardOfRecipe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return
-        // GestureDetector(
-        //   child:
-        Container(
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(5),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.shadow,
-              blurRadius: 4.0,
-              spreadRadius: 4.0,
-              offset: Offset(0, 4),
-            )
-          ]),
-      height: 136,
-      child: Expanded(
-        child: Row(children: [
-          SizedBox(
-            width: 149,
-            height: 136,
-            child: Image.asset(data.imagePath),
+    return Stack(alignment: Alignment.bottomRight, children: <Widget>[
+      Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.shadow,
+                blurRadius: 4.0,
+                spreadRadius: 4.0,
+                offset: Offset(0, 4),
+              )
+            ]),
+        height: 136,
+        child: Row(mainAxisSize: MainAxisSize.max, children: [
+          Flexible(
+            flex: 0,
+            child: Image.asset(
+              data.imagePath,
+              height: 136,
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 30, 0, 0),
-            child: Column(
-              children: [
-                SizedBox(
-                  width: 208,
-                  height: 52,
-                  child: Text(data.nameRecipe,
-                      style: const TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.w500,
-                          fontSize: 22),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                SizedBox(
-                  width: 208,
-                  height: 20,
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        "assets/images/clock.png",
-                        width: 16,
-                        height: 16,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(data.timeCoocking,
-                          style: const TextStyle(
-                              fontFamily: 'Roboto',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 16,
-                              color: AppColors.primaryGreen),
-                          overflow: TextOverflow.ellipsis)
-                    ],
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(14, 30, 14, 0),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedBox(
+                    // width: 204,
+                    height: 52,
+                    child: Text(data.nameRecipe,
+                        style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 22),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                   ),
-                )
-              ],
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  SizedBox(
+                    // width: 204,
+                    height: 20,
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "assets/images/clock.png",
+                          width: 16,
+                          height: 16,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text(data.timeCoocking,
+                            style: const TextStyle(
+                                fontFamily: 'Roboto',
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                color: AppColors.primaryGreen),
+                            overflow: TextOverflow.ellipsis)
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ]),
+        // ),
       ),
-      // ),
-    );
+      (data.favorite)
+          ? Container(
+              width: 66,
+              height: 23,
+              margin: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/flag.png"),
+                  fit: BoxFit.fill,
+                ),
+              ),
+              child: Container(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                  alignment: Alignment.centerRight,
+                  child: const Text(
+                    '1',
+                    style: TextStyle(
+                        fontFamily: 'Roboto',
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14,
+                        color: Colors.white),
+                  )))
+          : const SizedBox(),
+    ]);
   }
 }
