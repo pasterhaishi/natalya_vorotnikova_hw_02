@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'colors.dart';
 import 'models.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:path/path.dart';
 
 class RecipeDetailPage extends StatefulWidget {
   final Recipe data;
@@ -328,6 +326,7 @@ class _PageState extends State<RecipeDetailPage> {
                       onSubmitted: (String value) {
                         setState(() {
                           textComment = value;
+                          pathValue = " ";
                           var newComment = Comment(
                               value,
                               'anna',
@@ -349,22 +348,8 @@ class _PageState extends State<RecipeDetailPage> {
                                 showDialog<String>(
                                     context: context,
                                     builder: (BuildContext context) =>
-                                        GetImage());
+                                        const GetImage());
                               },
-                              //  async {
-                              //   pathValue = await Navigator.push(
-                              //       context,
-                              //       PageRouteBuilder(
-                              //         opaque: false,
-                              //         pageBuilder: (context, _, __) => Photo(),
-                              //         transitionsBuilder: (__,Animation<double> animation,___,Widget child)
-                              //         {
-                              //           return FadeTransition(opacity: animation,child:ScaleTransition(scale: ,))
-                              //         }
-                              //       ));
-                              //   // print(pathValue);
-                              //   // print(widget.data.comments.last.pathPhoto);
-                              // },
                               icon: const Icon(
                                 Icons.photo,
                                 color: AppColors.dackGreen,
@@ -409,6 +394,7 @@ class _GetImageState extends State<GetImage> {
   final picker = ImagePicker();
 
   Future getImageFromCamera() async {
+    // ignore: deprecated_member_use
     final pickerImage = await picker.getImage(source: ImageSource.camera);
 
     setState(() {
@@ -419,6 +405,7 @@ class _GetImageState extends State<GetImage> {
   }
 
   Future getImageFromGallery() async {
+    // ignore: deprecated_member_use
     final pickerImage = await picker.getImage(source: ImageSource.gallery);
 
     setState(() {
@@ -436,10 +423,10 @@ class _GetImageState extends State<GetImage> {
             title: const Text('Камера'),
             onTap: () {
               getImageFromCamera();
-              // Navigator.of(context).pop(_image);
+              Navigator.of(context).pop(_image);
             }),
         ListTile(
-          title: Text(_image.toString()),
+          title: const Text('Галлерея'),
           onTap: () {
             getImageFromGallery();
             Navigator.of(context).pop(_image);
@@ -449,73 +436,6 @@ class _GetImageState extends State<GetImage> {
     );
   }
 }
-
-// ignore: must_be_immutable
-// class Photo extends StatefulWidget {
-//   Photo({Key? key}) : super(key: key);
-
-//   String pathImage = '';
-
-//   // String get path {
-//   //   return pathImage;
-//   // }
-
-//   @override
-//   State<Photo> createState() => _PhotoState();
-// }
-
-// class _PhotoState extends State<Photo> {
-//   // File? _image;
-
-//   Future getImage(ImageSource source) async {
-//     try {
-//       final image = await ImagePicker().pickImage(source: source);
-//       if (image == null) return;
-
-//       // final imageTemporary = File(image.path);
-//       final imagePermanent = await saveFilePermanently(image.path);
-//       widget.pathImage = imagePermanent.toString();
-//       // setState(() {
-//       //   widget.pathImage = imagePermanent.toString();
-//       //   // this._image = imagePermanent;
-//       //   print(imagePermanent);
-//       // });
-//     } on PlatformException catch (e) {
-//       print('Files to pick image: $e');
-//     }
-//   }
-
-//   Future<File> saveFilePermanently(String imagePath) async {
-//     final directory = await getApplicationDocumentsDirectory();
-//     final name = basename(imagePath);
-//     final image = File('${directory.path}/$name');
-
-//     return File(imagePath).copy(image.path);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     String pathValue = '';
-//     return SimpleDialog(
-//       children: <Widget>[
-//         ListTile(
-//           title: const Text('Камера'),
-//           onTap: () {
-//             getImage(ImageSource.camera);
-
-//             pathValue = widget.pathImage.toString();
-//             Navigator.pop(context, pathValue);
-//             print(pathValue);
-//           },
-//         ),
-//         ListTile(
-//           title: Text(widget.pathImage.toString()),
-//           onTap: () => getImage(ImageSource.gallery),
-//         )
-//       ],
-//     );
-//   }
-// }
 
 class NewWidget extends StatefulWidget {
   const NewWidget({
@@ -591,7 +511,7 @@ class _CardOfComment extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.w400)),
                   // ignore: unnecessary_string_interpolations
-                  Text('${formattedDate}',
+                  Text('$formattedDate',
                       style: const TextStyle(
                           color: AppColors.grayText,
                           fontSize: 14,
